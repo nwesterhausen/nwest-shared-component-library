@@ -37,7 +37,7 @@ jobs:
           targets: x86_64-unknown-linux-gnu
           toolchain: stable
       - name: Configure cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84 #v2
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v4
       - name: Build Docs
