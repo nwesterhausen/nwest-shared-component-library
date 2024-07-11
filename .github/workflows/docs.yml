@@ -21,8 +21,7 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
   RUSTDOCFLAGS:
-    --markdown-css github-markdown.css --markdown-no-toc --index-page /home/runner/work/elementalist/elementalist/docs/rustdoc/index.md
-    -Zunstable-options
+    --markdown-css github-markdown.css
 
 jobs:
   # Single deploy job since we're just deploying
@@ -35,6 +34,10 @@ jobs:
           egress-policy: audit
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: dtolnay/rust-toolchain@21dc36fb71dd22e3317045c0c31a3f4249868b17 # master
+        with:
+          targets: x86_64-unknown-linux-gnu
+          toolchain: stable
       - name: Cache
         uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
         with:
