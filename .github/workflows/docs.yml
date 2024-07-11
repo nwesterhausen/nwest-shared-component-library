@@ -51,7 +51,7 @@ jobs:
       - name: Build Docs
         run: |
           cargo doc --workspace --no-deps
-          cp -r target/doc _site
+          cp -r target/doc/nwest_shared_component_library _site
           cp docs/rustdoc/github-markdown.css _site/github-markdown.css
       - name: Fix permissions
         run: |
