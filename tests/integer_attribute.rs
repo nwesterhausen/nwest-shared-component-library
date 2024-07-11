@@ -206,7 +206,7 @@ fn test_neg() {
     let attribute =
         IntegerAttribute::with_min_and_max(0, 100).expect("Failed to create IntegerAttribute");
     let result = -attribute;
-    assert_eq!(result.current, -100);
+    assert_eq!(result.current, 0);
 }
 
 #[test]

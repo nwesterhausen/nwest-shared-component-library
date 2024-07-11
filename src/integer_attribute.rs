@@ -369,7 +369,7 @@ impl std::ops::Neg for IntegerAttribute {
         Self {
             min: self.min,
             max: self.max,
-            current: -self.current.clamp(self.min, self.max),
+            current: (-self.current).clamp(self.min, self.max),
         }
     }
 }
