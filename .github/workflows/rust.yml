@@ -67,7 +67,7 @@ jobs:
         uses: dtolnay/rust-toolchain@21dc36fb71dd22e3317045c0c31a3f4249868b17 # stable
         with:
           components: clippy
-          toolchain: nightly-2024-01-17
+          toolchain: stable
       - name: Run clippy
         run: cargo clippy -- -D warnings
   test:
