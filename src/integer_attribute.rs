@@ -24,22 +24,22 @@ use crate::AttributeError;
 /// use nwest_shared_component_library::IntegerAttribute;
 ///
 /// // Create a new attribute with a minimum value of 0, a maximum value of 100, and a current value of 100.
-/// let health = IntegerAttribute::new(0, 100, 100).unwrap();
-/// // Alternatively, you can create a new attribute by chaining. When setting a maximum this way, the current value will be set to the maximum value.
-/// let health_2 = IntegerAttribute::default().set_max(100).unwrap();
+/// let mut health = IntegerAttribute::new(100);
 ///
-/// // Get the current value of the attribute.
-/// let current_health = health.current_value();
 /// // The current health is 100.
-/// assert_eq!(current_health, 100);
+/// assert_eq!(health.current_value(), 100);
+/// assert_eq!(health, 100);
 ///
 /// // Add 10 to the current health.
 /// health += 10;
+///
 /// // The current health is now 100, as it is clamped to the maximum value.
 /// assert_eq!(health.current_value(), 100);
+/// assert_eq!(health, 100);
 ///
 /// // Subtract 15 from the current health.
 /// health -= 15;
+///
 /// // The current health is now 85.
 /// assert_eq!(health.current_value(), 85);
 /// assert_eq!(health, 85);
@@ -62,43 +62,29 @@ pub struct IntegerAttribute {
     pub min: i32,
     /// The current value of the attribute.
     ///
-    /// Clamped between `min` and `max`. This should usually be accessed through the `current_value` method, or implicitly through the `IntegerAttribute` struct.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use nwest_shared_component_library::IntegerAttribute;
-    ///
-    /// let attribute = IntegerAttribute::default();
-    ///
-    /// // The current value is 0.
-    /// assert_eq!(attribute.current_value(), 0);
-    /// assert_eq!(attribute, 0);
-    ///
-    /// // Set the max value to 10. (This will also set the current value to 10.)
-    /// attribute.set_max(10).unwrap();
-    ///
-    /// // The current value is now 10.
-    /// assert_eq!(attribute.current_value(), 10);
-    /// assert_eq!(attribute, 10);
-    ///
-    /// // Set the current value to 5.
-    /// attribute.set_current(5);
-    ///
-    /// // The current value is now 5.
-    /// assert_eq!(attribute.current_value(), 5);
-    /// assert_eq!(attribute, 5);
-    /// ```
+    /// Clamped between `min` and `max`. This should usually be accessed through the `current_value` method, or implicitly, treating `IntegerAttribute` as an `i32`.
     pub current: i32,
 }
 
 impl IntegerAttribute {
+    /// Create a new integer value with the given maximum.
+    ///
+    /// The minimum value will be set to 0, and the current value will be set to the maximum value.
+    #[must_use]
+    pub const fn new(max: i32) -> Self {
+        Self {
+            min: 0,
+            max,
+            current: max,
+        }
+    }
+
     /// Create a new integer attribute with the given values.
     ///
     /// # Errors
     ///
     /// Returns an error if the minimum value is greater than the maximum value.
-    pub fn new(min: i32, max: i32, current: i32) -> Result<Self, AttributeError> {
+    pub fn new_as_defined(min: i32, max: i32, current: i32) -> Result<Self, AttributeError> {
         if min > max {
             return Err(AttributeError::MinGreaterThanMax(min, max));
         }
@@ -110,78 +96,28 @@ impl IntegerAttribute {
         })
     }
 
-    /// Set the minimum value of the attribute at instantiation.
+    /// Wrapper for `new_as_defined` that sets the current value to the maximum value.
     ///
     /// # Errors
     ///
     /// Returns an error if the minimum value is greater than the maximum value.
-    ///
-    /// If this is set before setting the maximum value, the maximum value will be set to the same value.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use nwest_shared_component_library::IntegerAttribute;
-    ///
-    /// let attribute = IntegerAttribute::default();
-    /// // Set the minimum value to 10.
-    /// let attribute = attribute.set_min(10).unwrap();
-    /// // The minimum value is now 10.
-    /// assert_eq!(attribute.min, 10);
-    /// // The maximum value is now 10.
-    /// assert_eq!(attribute.max, 10);
-    /// ```
-    pub fn set_min(mut self, min: i32) -> Result<Self, AttributeError> {
-        // If we are uninitialized, set the max to the min.
-        if self.max == 0 && self.min == 0 {
-            self.max = min;
-        }
-
-        if min > self.max {
-            return Err(AttributeError::MinGreaterThanMax(min, self.max));
-        }
-
-        self.min = min;
-        self.current = self.current.clamp(self.min, self.max);
-
-        Ok(self)
+    pub fn with_min_max_and_current(
+        min: i32,
+        max: i32,
+        current: i32,
+    ) -> Result<Self, AttributeError> {
+        Self::new_as_defined(min, max, current)
     }
 
-    /// Set the maximum value of the attribute at instantiation.
+    /// Create a new attribute with a defined maximum and minimum value.
     ///
-    /// This will also set the current value to the maximum value if it is uninitialized.
+    /// The current value will be set to the maximum value.
     ///
     /// # Errors
     ///
-    /// Returns an error if the maximum value is less than the minimum value.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use nwest_shared_component_library::IntegerAttribute;
-    ///
-    /// let attribute = IntegerAttribute::default();
-    /// // Set the maximum value to 10.
-    /// let attribute = attribute.set_max(10).unwrap();
-    /// // The maximum value is now 10.
-    /// assert_eq!(attribute.max, 10);
-    /// // The minimum value is now 10.
-    /// assert_eq!(attribute.min, 10);
-    /// ```
-    pub fn set_max(mut self, max: i32) -> Result<Self, AttributeError> {
-        // If the current value is also uninitialized, set it to the max.
-        if self.current == 0 {
-            self.current = max;
-        }
-
-        if max < self.min {
-            return Err(AttributeError::MaxLessThanMin(max, self.min));
-        }
-
-        self.max = max;
-        self.current = self.current.clamp(self.min, self.max);
-
-        Ok(self)
+    /// Returns an error if the minimum value is greater than the maximum value.
+    pub fn with_min_and_max(min: i32, max: i32) -> Result<Self, AttributeError> {
+        Self::new_as_defined(min, max, max)
     }
 
     /// Set the current value of the attribute at instantiation. It will be clamped between `min` and `max`.
@@ -190,35 +126,38 @@ impl IntegerAttribute {
     ///
     /// # Example
     ///
-    /// ```
+    /// ```rust
     /// use nwest_shared_component_library::IntegerAttribute;
     ///
-    /// let attribute = IntegerAttribute::default();
-    /// // Set our max to 10.
-    /// let attribute = attribute.set_max(10).unwrap();
+    /// let mut mana = IntegerAttribute::new(10);
+    ///
+    /// // When using `new`, the current value is set to the maximum value.
+    /// assert_eq!(mana, 10);
+    /// assert_eq!(mana.current_value(), 10);
+    ///
     /// // Set our current value to 5.
-    /// let attribute = attribute.set_current(5);
+    /// mana.set_value(5);
     ///
     /// // The current value is now 5.
-    /// assert_eq!(attribute.current, 5);
+    /// assert_eq!(mana, 5);
+    /// assert_eq!(mana.current_value(), 5);
     ///
     /// // Set our current value to 15.
-    /// let attribute = attribute.set_current(15);
+    /// mana.set_value(15);
     ///
     /// // The current value is now 10, as it is clamped to the max.
-    /// assert_eq!(attribute.current, 10);
+    /// assert_eq!(mana, 10);
+    /// assert_eq!(mana.current_value(), 10);
     ///
     /// // Set our current value to -5.
-    /// let attribute = attribute.set_current(-5);
+    /// mana.set_value(-5);
     ///
     /// // The current value is now 0, as it is clamped to the min.
-    /// assert_eq!(attribute.current, 0);
+    /// assert_eq!(mana, 0);
+    /// assert_eq!(mana.current_value(), 0);
     /// ```
-    #[must_use]
-    pub fn set_current(mut self, current: i32) -> Self {
+    pub fn set_value(&mut self, current: i32) {
         self.current = current.clamp(self.min, self.max);
-
-        self
     }
 
     /// Get the current value of the attribute.
@@ -244,19 +183,39 @@ impl IntegerAttribute {
         }
     }
 
-    /// Set the current value of the attribute.
-    ///
-    /// This will be clamped between `min` and `max`.
-    pub fn set_current_value(&mut self, value: i32) {
-        self.current = value.clamp(self.min, self.max);
-    }
-
     /// Set the max value of the attribute.
     ///
     /// # Errors
     ///
     /// Returns an error if the maximum value is less than the minimum value.
-    pub fn set_max_value(&mut self, value: i32) -> Result<(), AttributeError> {
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use nwest_shared_component_library::IntegerAttribute;
+    ///
+    /// let mut mana = IntegerAttribute::default();
+    ///
+    /// // The current value is 0.
+    /// assert_eq!(mana.current_value(), 0);
+    /// assert_eq!(mana, 0);
+    ///
+    /// // Set the max value to 10.
+    /// mana.set_max(10).expect("Failed to set max value.");
+    /// mana.set_value(10);
+    ///
+    /// // The current value is now 10.
+    /// assert_eq!(mana.current_value(), 10);
+    /// assert_eq!(mana, 10);
+    ///
+    /// // Set the current value to 5.
+    /// mana.set_value(5);
+    ///
+    /// // The current value is now 5.
+    /// assert_eq!(mana.current_value(), 5);
+    /// assert_eq!(mana, 5);
+    /// ```
+    pub fn set_max(&mut self, value: i32) -> Result<(), AttributeError> {
         if value < self.min {
             return Err(AttributeError::MaxLessThanMin(value, self.min));
         }
@@ -272,7 +231,7 @@ impl IntegerAttribute {
     /// # Errors
     ///
     /// Returns an error if the minimum value is greater than the maximum value.
-    pub fn set_min_value(&mut self, value: i32) -> Result<(), AttributeError> {
+    pub fn set_min(&mut self, value: i32) -> Result<(), AttributeError> {
         if value > self.max {
             return Err(AttributeError::MinGreaterThanMax(value, self.max));
         }
@@ -284,13 +243,25 @@ impl IntegerAttribute {
     }
 }
 
-impl Eq for IntegerAttribute {}
-
 impl PartialEq for IntegerAttribute {
     fn eq(&self, other: &Self) -> bool {
         self.current == other.current
     }
 }
+
+impl PartialEq<i32> for IntegerAttribute {
+    fn eq(&self, other: &i32) -> bool {
+        self.current == *other
+    }
+}
+
+impl PartialEq<IntegerAttribute> for i32 {
+    fn eq(&self, other: &IntegerAttribute) -> bool {
+        *self == other.current
+    }
+}
+
+impl Eq for IntegerAttribute {}
 
 impl std::hash::Hash for IntegerAttribute {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
@@ -424,5 +395,49 @@ impl std::ops::Div<i32> for IntegerAttribute {
 impl std::ops::DivAssign<i32> for IntegerAttribute {
     fn div_assign(&mut self, rhs: i32) {
         self.current = (self.current / rhs).clamp(self.min, self.max);
+    }
+}
+
+/// Allow negation of `IntegerAttribute`. This is still clamped to the min and max values, and just tries to make the value negative.
+impl std::ops::Neg for IntegerAttribute {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Self {
+            min: self.min,
+            max: self.max,
+            current: -self.current.clamp(self.min, self.max),
+        }
+    }
+}
+
+/// Allow calculating remainder of `IntegerAttribute` and `i32`. This assigns the remainder as the current value.
+impl std::ops::Rem<i32> for IntegerAttribute {
+    type Output = Self;
+
+    fn rem(self, rhs: i32) -> Self::Output {
+        Self {
+            min: self.min,
+            max: self.max,
+            current: (self.current % rhs).clamp(self.min, self.max),
+        }
+    }
+}
+
+/// Allow calculating remainder of `i32` and `IntegerAttribute` with assignment.
+impl std::ops::RemAssign<i32> for IntegerAttribute {
+    fn rem_assign(&mut self, rhs: i32) {
+        self.current = (self.current % rhs).clamp(self.min, self.max);
+    }
+}
+
+/// Range of `IntegerAttribute` values.
+impl std::ops::RangeBounds<i32> for IntegerAttribute {
+    fn start_bound(&self) -> std::ops::Bound<&i32> {
+        std::ops::Bound::Included(&self.min)
+    }
+
+    fn end_bound(&self) -> std::ops::Bound<&i32> {
+        std::ops::Bound::Included(&self.max)
     }
 }
