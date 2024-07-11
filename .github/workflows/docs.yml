@@ -20,8 +20,6 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTDOCFLAGS:
-    --markdown-css github-markdown.css
 
 jobs:
   # Single deploy job since we're just deploying
@@ -50,9 +48,9 @@ jobs:
           key: ${{ runner.os }}-docs-${{ hashFiles('**/Cargo.toml') }}
       - name: Build Docs
         run: |
-          cargo doc --workspace --no-deps
+          cargo doc --no-deps
           cp -r target/doc/nwest_shared_component_library _site
-          cp docs/rustdoc/github-markdown.css _site/github-markdown.css
+          echo "<meta http-equiv=\"refresh\" content=\"0; url=nwest_shared_component_library\">" > _site/index.html
       - name: Fix permissions
         run: |
           chmod -c -R +rX "_site/" | while read line; do
