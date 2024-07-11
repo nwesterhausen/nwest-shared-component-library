@@ -13,4 +13,10 @@ pub enum AttributeError {
     /// Try to create an attribute with a minimum value greater than the maximum value.
     #[error("Minimum value greater than maximum value. {0} > {1}")]
     MinGreaterThanMax(i32, i32),
+    /// Try to create an attribute with a maximum value less than the minimum value.
+    #[error("Maximum value less than minimum value. {0} < {1}")]
+    MaxLessThanMin(i32, i32),
+    /// An error when converting an attribute to a type.
+    #[error("Conversion error. {0}")]
+    ConversionError(String),
 }
