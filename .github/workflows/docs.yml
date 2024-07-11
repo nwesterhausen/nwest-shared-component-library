@@ -36,30 +36,25 @@ jobs:
         with:
           targets: x86_64-unknown-linux-gnu
           toolchain: stable
-      - name: Cache
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target
-          key: ${{ runner.os }}-docs-${{ hashFiles('**/Cargo.toml') }}
-      - name: Build Docs
-        run: |
-          cargo doc --no-deps
-          cp -r target/doc/nwest_shared_component_library _site
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=nwest_shared_component_library\">" > _site/index.html
-      - name: Fix permissions
-        run: |
-          chmod -c -R +rX "_site/" | while read line; do
-            echo "::warning title=Invalid file permissions automatically fixed::$line"
-          done
+      - name: Configure cache
+        uses: Swatinem/rust-cache@v2
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v4
+      - name: Build Docs
+        run: cargo doc --no-deps
+      - name: Add redirect
+        run: echo '<meta http-equiv="refresh" content="0; url=nwest_shared_component_library/index.html">' > target/doc/index.html
+      - name: Remove lock file
+        run: rm target/doc/.lock
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "target/doc/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: target/doc
   deploy:
     needs: build
     name: Deploy to GitHub Pages
