@@ -5,7 +5,7 @@
 use thiserror::Error;
 
 /// An error that can occur when using Attributes.
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq, Eq, Clone, Hash, PartialOrd, Ord)]
 pub enum AttributeError {
     /// An error that can occur when using Attributes.
     #[error("Generic attribute error. {0}")]

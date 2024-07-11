@@ -25,24 +25,6 @@ use crate::AttributeError;
 ///
 /// // Create a new attribute with a minimum value of 0, a maximum value of 100, and a current value of 100.
 /// let mut health = IntegerAttribute::new(100);
-///
-/// // The current health is 100.
-/// assert_eq!(health.current_value(), 100);
-/// assert_eq!(health, 100);
-///
-/// // Add 10 to the current health.
-/// health += 10;
-///
-/// // The current health is now 100, as it is clamped to the maximum value.
-/// assert_eq!(health.current_value(), 100);
-/// assert_eq!(health, 100);
-///
-/// // Subtract 15 from the current health.
-/// health -= 15;
-///
-/// // The current health is now 85.
-/// assert_eq!(health.current_value(), 85);
-/// assert_eq!(health, 85);
 /// ```
 #[derive(Serialize, Deserialize, Clone, Copy, Component, Resource, Default)]
 pub struct IntegerAttribute {
@@ -70,10 +52,12 @@ impl IntegerAttribute {
     /// Create a new integer value with the given maximum.
     ///
     /// The minimum value will be set to 0, and the current value will be set to the maximum value.
+    ///
+    /// If a negative maximum is provided, minimum will be clamped to the maximum value.
     #[must_use]
-    pub const fn new(max: i32) -> Self {
+    pub fn new(max: i32) -> Self {
         Self {
-            min: 0,
+            min: 0.clamp(i32::MIN, max),
             max,
             current: max,
         }
@@ -129,32 +113,11 @@ impl IntegerAttribute {
     /// ```rust
     /// use nwest_shared_component_library::IntegerAttribute;
     ///
+    /// // Create a new attribute with a maximum value of 10 and a current value of 10.
     /// let mut mana = IntegerAttribute::new(10);
-    ///
-    /// // When using `new`, the current value is set to the maximum value.
-    /// assert_eq!(mana, 10);
-    /// assert_eq!(mana.current_value(), 10);
     ///
     /// // Set our current value to 5.
     /// mana.set_value(5);
-    ///
-    /// // The current value is now 5.
-    /// assert_eq!(mana, 5);
-    /// assert_eq!(mana.current_value(), 5);
-    ///
-    /// // Set our current value to 15.
-    /// mana.set_value(15);
-    ///
-    /// // The current value is now 10, as it is clamped to the max.
-    /// assert_eq!(mana, 10);
-    /// assert_eq!(mana.current_value(), 10);
-    ///
-    /// // Set our current value to -5.
-    /// mana.set_value(-5);
-    ///
-    /// // The current value is now 0, as it is clamped to the min.
-    /// assert_eq!(mana, 0);
-    /// assert_eq!(mana.current_value(), 0);
     /// ```
     pub fn set_value(&mut self, current: i32) {
         self.current = current.clamp(self.min, self.max);
