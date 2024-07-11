@@ -1,4 +1,4 @@
-//! //! # Integer Attribute
+//! # Integer Attribute
 //!
 //! This module contains the implementation of the `IntegerAttribute` struct and its methods and implementations.
 //!
