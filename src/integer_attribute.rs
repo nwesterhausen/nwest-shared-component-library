@@ -247,7 +247,12 @@ impl std::fmt::Debug for IntegerAttribute {
 
 impl std::fmt::Display for IntegerAttribute {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} ({:.2}%)", self.current, self.current_percentage(),)
+        write!(
+            f,
+            "{} ({:.2}%)",
+            self.current,
+            self.current_percentage() * 100.0,
+        )
     }
 }
 
