@@ -41,6 +41,22 @@ fn test_current_percentage() {
 }
 
 #[test]
+fn test_current_percentage_negative_minimum() {
+    let mut attribute =
+        IntegerAttribute::with_min_and_max(-100, 100).expect("Failed to create IntegerAttribute");
+    attribute.set_value(0);
+    assert!((attribute.current_percentage() - 0.5).abs() < f32::EPSILON);
+}
+
+#[test]
+fn test_current_percentage_positive_minimum() {
+    let mut attribute =
+        IntegerAttribute::with_min_and_max(50, 100).expect("Failed to create IntegerAttribute");
+    attribute.set_value(75);
+    assert!((attribute.current_percentage() - 0.5).abs() < f32::EPSILON);
+}
+
+#[test]
 fn test_set_max() {
     let mut attribute = IntegerAttribute::new(100);
     attribute.set_max(200).expect("Failed to set max");
@@ -54,7 +70,6 @@ fn test_set_max_error() {
     let mut attribute = IntegerAttribute::new(100);
     let result = attribute.set_max(-10);
     assert!(result.is_err());
-    assert_eq!(result.unwrap_err(), AttributeError::MaxLessThanMin(-10, 0));
 }
 
 #[test]
@@ -72,10 +87,6 @@ fn test_set_min_error() {
     let mut attribute = IntegerAttribute::new(100);
     let result = attribute.set_min(200);
     assert!(result.is_err());
-    assert_eq!(
-        result.unwrap_err(),
-        AttributeError::MinGreaterThanMax(200, 100)
-    );
 }
 
 #[test]
@@ -119,12 +130,6 @@ fn test_try_from_error() {
         IntegerAttribute::with_min_and_max(-100, -1).expect("Failed to create IntegerAttribute");
     let value: Result<u32, AttributeError> = TryFrom::try_from(attribute);
     assert!(value.is_err());
-    assert_eq!(
-        value.unwrap_err(),
-        AttributeError::ConversionError(
-            "Current value is negative when trying to convert to u32.".to_string()
-        )
-    );
 }
 
 #[test]

@@ -14,7 +14,7 @@ use crate::AttributeError;
 ///
 /// When used with modifiers, it will handle rounding and clamping to the min/max values.
 ///
-/// If it is desired to have a decimal attribute, use the `FloatAttribute` instead.
+/// If it is desired to have a decimal attribute, use the `DecimalAttribute` instead.
 ///
 /// # Example
 ///
@@ -135,15 +135,7 @@ impl IntegerAttribute {
     #[allow(clippy::cast_precision_loss)]
     #[must_use]
     pub fn current_percentage(&self) -> f32 {
-        match self.min.cmp(&0) {
-            std::cmp::Ordering::Less => {
-                (self.current + self.min) as f32 / (self.max + self.min) as f32
-            }
-            std::cmp::Ordering::Equal => self.current as f32 / self.max as f32,
-            std::cmp::Ordering::Greater => {
-                (self.current - self.min) as f32 / (self.max - self.min) as f32
-            }
-        }
+        (self.current - self.min) as f32 / (self.max - self.min) as f32
     }
 
     /// Set the max value of the attribute.
