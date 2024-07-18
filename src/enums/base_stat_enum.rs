@@ -60,20 +60,40 @@ pub enum BaseStat {
     Projectile,
 }
 
+impl std::fmt::Debug for BaseStat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "(BaseStat) None"),
+            Self::Health => write!(f, "Health"),
+            Self::Mana => write!(f, "Mana"),
+            Self::Stamina => write!(f, "Stamina"),
+            Self::Attack => write!(f, "Attack"),
+            Self::Damage => write!(f, "Damage"),
+            Self::Defense => write!(f, "Defense"),
+            Self::Speed => write!(f, "Speed"),
+            Self::CriticalStrike => write!(f, "CriticalStrike"),
+            Self::Armor => write!(f, "Armor"),
+            Self::Evasion => write!(f, "Evasion"),
+            Self::Accuracy => write!(f, "Accuracy"),
+            Self::Stun => write!(f, "Stun"),
+            Self::Silence => write!(f, "Silence"),
+            Self::Slow => write!(f, "Slow"),
+            Self::Root => write!(f, "Root"),
+            Self::Fear => write!(f, "Fear"),
+            Self::Charm => write!(f, "Charm"),
+            Self::Taunt => write!(f, "Taunt"),
+            Self::Knockback => write!(f, "Knockback"),
+            Self::Projectile => write!(f, "Projectile"),
+        }
+    }
+}
+
 impl DescriptiveComponent for BaseStat {
     fn name(&self) -> String {
         todo!()
     }
 
     fn description(&self) -> String {
-        todo!()
-    }
-
-    fn value(&self) -> String {
-        todo!()
-    }
-
-    fn percentage(&self) -> String {
         todo!()
     }
 }

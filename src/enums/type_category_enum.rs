@@ -84,20 +84,51 @@ pub enum TypeCategory {
     Healing,
 }
 
+impl std::fmt::Debug for TypeCategory {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::All => write!(f, "(TypeCategory) All"),
+            Self::Physical => write!(f, "Physical"),
+            Self::Magical => write!(f, "Magical"),
+            Self::True => write!(f, "True"),
+            Self::Mental => write!(f, "Mental"),
+            Self::None => write!(f, "None"),
+            Self::Fire => write!(f, "Fire"),
+            Self::Lightning => write!(f, "Lightning"),
+            Self::Water => write!(f, "Water"),
+            Self::Earth => write!(f, "Earth"),
+            Self::Air => write!(f, "Air"),
+            Self::Ice => write!(f, "Ice"),
+            Self::Force => write!(f, "Force"),
+            Self::Light => write!(f, "Light"),
+            Self::Dark => write!(f, "Dark"),
+            Self::Arcane => write!(f, "Arcane"),
+            Self::Death => write!(f, "Death"),
+            Self::Life => write!(f, "Life"),
+            Self::Poison => write!(f, "Poison"),
+            Self::Enhancement => write!(f, "Enhancement"),
+            Self::Reduction => write!(f, "Reduction"),
+            Self::Summoning => write!(f, "Summoning"),
+            Self::Necromancy => write!(f, "Necromancy"),
+            Self::Polymorph => write!(f, "Polymorph"),
+            Self::Time => write!(f, "Time"),
+            Self::Space => write!(f, "Space"),
+            Self::Gravity => write!(f, "Gravity"),
+            Self::Illusion => write!(f, "Illusion"),
+            Self::Enchantment => write!(f, "Enchantment"),
+            Self::Curse => write!(f, "Curse"),
+            Self::Blessing => write!(f, "Blessing"),
+            Self::Healing => write!(f, "Healing"),
+        }
+    }
+}
+
 impl DescriptiveComponent for TypeCategory {
     fn name(&self) -> String {
         todo!()
     }
 
     fn description(&self) -> String {
-        todo!()
-    }
-
-    fn value(&self) -> String {
-        todo!()
-    }
-
-    fn percentage(&self) -> String {
         todo!()
     }
 }

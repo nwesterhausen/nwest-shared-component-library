@@ -47,20 +47,34 @@ pub enum StatModifier {
     Vampirism,
 }
 
+impl std::fmt::Debug for StatModifier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "(StatModifier) None"),
+            Self::Reduction => write!(f, "Reduction"),
+            Self::Regeneration => write!(f, "Regeneration"),
+            Self::Amplification => write!(f, "Amplification"),
+            Self::Resistance => write!(f, "Resistance"),
+            Self::Speed => write!(f, "Speed"),
+            Self::Size => write!(f, "Size"),
+            Self::Lifetime => write!(f, "Lifetime"),
+            Self::Range => write!(f, "Range"),
+            Self::Chance => write!(f, "Chance"),
+            Self::Duration => write!(f, "Duration"),
+            Self::Cooldown => write!(f, "Cooldown"),
+            Self::Cost => write!(f, "Cost"),
+            Self::Penetration => write!(f, "Penetration"),
+            Self::Vampirism => write!(f, "Vampirism"),
+        }
+    }
+}
+
 impl DescriptiveComponent for StatModifier {
     fn name(&self) -> String {
         todo!()
     }
 
     fn description(&self) -> String {
-        todo!()
-    }
-
-    fn value(&self) -> String {
-        todo!()
-    }
-
-    fn percentage(&self) -> String {
         todo!()
     }
 }

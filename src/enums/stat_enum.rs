@@ -39,7 +39,8 @@ impl DescriptiveComponent for Stat {
             Self::None => "None".to_string(),
             Self::Simple(stat) => stat.name(),
             Self::Complex(stat, category, modifier) => {
-                format!("{} {} {}", stat.name(), category.name(), modifier.name())
+                // Physical Damage Resistance or Magical Damage Amplification
+                format!("{} {} {}", category.name(), stat.name(), modifier.name())
             }
         }
     }
@@ -47,12 +48,16 @@ impl DescriptiveComponent for Stat {
     fn description(&self) -> String {
         todo!()
     }
+}
 
-    fn value(&self) -> String {
-        todo!()
-    }
-
-    fn percentage(&self) -> String {
-        todo!()
+impl std::fmt::Debug for Stat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "(Stat) None"),
+            Self::Simple(stat) => write!(f, "Stat::Simple: {stat:?}"),
+            Self::Complex(stat, category, modifier) => {
+                write!(f, "Stat::Complex: {stat:?} {category:?} {modifier:?}")
+            }
+        }
     }
 }
