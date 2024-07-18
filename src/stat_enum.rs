@@ -1,4 +1,13 @@
 //! Module for the `Stat` enum.
+//!
+//! A `Stat` is a single descriptive value that measures some attribute for an entity. The stats here
+//! are broken down into two categories: `BaseStat` and `ComplexStat`. A `BaseStat` is a simple stat
+//! that has no additional properties. A `ComplexStat` is a stat that has additional properties, such
+//! as a damage category and a stat modifier.
+//!
+//! To be the most accommodating, the `Stat` enum is designed to be as flexible as possible. This means
+//! that it can represent a wide variety of stats, from simple stats like health and mana to complex
+//! stats like damage resistance and damage amplification and even mental armor and physical evasion.
 
 use bevy_ecs::{component::Component, system::Resource};
 use serde::{Deserialize, Serialize};
@@ -19,10 +28,15 @@ pub enum Stat {
     ///
     /// Stats like `DamageResistance`, `DamageAmplification`, etc. are considered complex stats. They can be modified both
     /// by a type of damage and the specific modifier.
-    Complex(BaseStat, DamageCategory, StatModifier),
+    Complex(BaseStat, TypeCategory, StatModifier),
 }
 
 /// Defines the base stats that an entity can have.
+///
+/// This should be the very root of a stat, like in the case of `DamageResistance` or `DamageAmplification`, where the base
+/// stat is `Damage`. In the `Stat` enum, use the `DescriptiveComponent` trait to get the full name of the stat, and a description.
+///
+/// If any additional "base" stats are needed, they should be added here.
 #[derive(
     Serialize, Deserialize, Clone, Copy, Component, Resource, Default, PartialEq, Eq, Hash,
 )]
@@ -73,11 +87,16 @@ pub enum BaseStat {
 }
 
 /// Defines the possible damage categories that an entity can have.
+///
+/// There are 5 general categories of damage: `All`, `Physical`, `Magical`, `True`, and `Mental`. These categories are used to
+/// specify the broad buffs and debuffs applied to an entity. More specific damage categories can be used instead, like the various
+/// types of elemental damage (`Fire`, `Ice`, etc.), or the various types of physical damage (`Slashing`, `Piercing`, etc.), or
+/// even other magic types (`Summoning`, `Necromancy`, etc.).
 #[derive(
     Serialize, Deserialize, Clone, Copy, Component, Resource, Default, PartialEq, Eq, Hash,
 )]
-pub enum DamageCategory {
-    /// All represents all types of damage. It's the default value, since a `None` value is not allowed.
+pub enum TypeCategory {
+    /// All represents all types of damage. It's the default value, since a `None` value is a special case.
     #[default]
     All,
     /// Physical damage is damage that is dealt by physical means, such as a sword or a punch.
@@ -88,6 +107,62 @@ pub enum DamageCategory {
     True,
     /// Mental damage is damage directed towards the mind of an entity, such as a psychic attack or a fear spell.
     Mental,
+    /// `None` is a special case that represents nothing. It is used for stats that are not affected by
+    /// a specific damage category, but still are a `Stat::Complex`. `None` specifically has no interaction with
+    /// any category.
+    None,
+    /// `Fire` is used for elemental fire damage.
+    Fire,
+    /// `Lightning` is used for elemental lightning damage.
+    Lightning,
+    /// `Water` is used for elemental water damage.
+    Water,
+    /// `Earth` is used for elemental earth damage.
+    Earth,
+    /// `Air` is used for elemental air damage.
+    Air,
+    /// `Ice` is used for elemental ice damage.
+    Ice,
+    /// `Force` is used for force damage.
+    Force,
+    /// `Light` is used for light (radiant) damage.
+    Light,
+    /// `Dark` is used for darkness damage.
+    Dark,
+    /// `Arcane` is used for arcane damage.
+    Arcane,
+    /// `Death` is used for death magic.
+    Death,
+    /// `Life` is used for life magic.
+    Life,
+    /// `Poison` is used for poison damage.
+    Poison,
+    /// `Enhancement` is used for enhancement magic.
+    Enhancement,
+    /// `Reduction` is used for reduction magic.
+    Reduction,
+    /// `Summoning` is used for summoning magic.
+    Summoning,
+    /// `Necromancy` is used for necromancy magic.
+    Necromancy,
+    /// `Polymorph` is used for polymorph magic.
+    Polymorph,
+    /// `Time` is used for time magic.
+    Time,
+    /// `Space` is used for space magic.
+    Space,
+    /// `Gravity` is used for gravity magic.
+    Gravity,
+    /// `Illusion` is used for illusion magic.
+    Illusion,
+    /// `Enchantment` is used for enchantment magic.
+    Enchantment,
+    /// `Curse` is used for curse magic.
+    Curse,
+    /// `Blessing` is used for blessings.
+    Blessing,
+    /// `Healing` is used for healing magic.
+    Healing,
 }
 
 /// Defines the possible stat modifiers that an entity can have.

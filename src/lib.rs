@@ -12,7 +12,7 @@ pub use decimal_attribute::DecimalAttribute;
 pub use errors::AttributeError;
 pub use integer_attribute::IntegerAttribute;
 pub use stat_enum::BaseStat;
-pub use stat_enum::DamageCategory;
 pub use stat_enum::Stat;
 pub use stat_enum::StatModifier;
+pub use stat_enum::TypeCategory;
 pub use statistic::Statistic;
